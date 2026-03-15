@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const BASIC_USER = "test"
-const BASIC_PASS = "test"
+const BASIC_USER = process.env.USERNAME || "test"
+const BASIC_PASS = process.env.PASSWORD || "test"
 
-const API_KEY = "test"
-const SECRET_KEY = "test"
+const API_KEY = process.env.API_KEY || "test"
+const SECRET_KEY = process.env.SECRET_KEY || "test"
 
 function unauthorizedBasic() {
   return new NextResponse("Unauthorized", {
