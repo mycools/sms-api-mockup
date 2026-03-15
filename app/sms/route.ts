@@ -85,20 +85,14 @@ export async function POST(req: NextRequest) {
 
     const id = messageId()
 
-    db.prepare(`
-      INSERT INTO sms_messages
-      (id, phone, message, sender, credit_used, shorten_url, tracking_url, expire)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      id,
-      phone,
-      finalMessage,
-      sender,
-      1,
-      shortenUrl ? 1 : 0,
-      trackingUrl || null,
-      expireValue
-    )
+    db.execute({
+      sql: `
+        INSERT INTO sms_messages
+        (id, phone, message, sender, credit_used, shorten_url, tracking_url, expire)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [id, phone, finalMessage, sender, 1, shortenUrl ? 1 : 0, trackingUrl || null, expireValue]
+    })
 
     okList.push({
       message_id: id,

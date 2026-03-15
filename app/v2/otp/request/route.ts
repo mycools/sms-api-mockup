@@ -37,17 +37,11 @@ export async function POST(req: NextRequest) {
   const refno = generateRefno()
 const message = `รหัสยืนยันของคุณคือ ${pin} (Ref : ${refno})`
 
-  db.prepare(`
+  db.execute({ sql : `
     INSERT INTO otp_requests
     (id, token, refno, phone, pin)
     VALUES (?, ?, ?, ?, ?)
-  `).run(
-    token,
-    token,
-    refno,
-    phone,
-    pin
-  )
+  `, args: [token, token, refno, phone, pin] })
 
   /*
   ------------------------
@@ -55,17 +49,11 @@ const message = `รหัสยืนยันของคุณคือ ${pin
   ------------------------
   */
 
-  db.prepare(`
+  db.execute({ sql : `
     INSERT INTO sms_messages
     (id, phone, message, sender, credit_used)
     VALUES (?, ?, ?, ?, ?)
-  `).run(
-    token,
-    phone,
-    message,
-    "OTP",
-    1
-  )
+  `, args: [token, phone, message, "OTP", 1] })
 
   // ตรงนี้ normally จะยิง SMS
   console.log(`OTP for ${phone}: ${pin}`)

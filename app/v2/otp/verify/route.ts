@@ -19,10 +19,16 @@ export async function POST(req: NextRequest) {
 
   }
 
-  const row:any = db.prepare(`
-    SELECT * FROM otp_requests
+ const result = await db.execute({
+  sql: `
+    SELECT *
+    FROM otp_requests
     WHERE token = ?
-  `).get(token)
+  `,
+  args: [token]
+})
+
+const row : any = result.rows[0]
 
   if (!row) {
 
@@ -58,11 +64,14 @@ export async function POST(req: NextRequest) {
 
   }
 
-  db.prepare(`
-    UPDATE otp_requests
-    SET verified = 1
-    WHERE token = ?
-  `).run(token)
+  await db.execute({
+    sql: `
+      UPDATE otp_requests
+      SET verified = 1
+      WHERE token = ?
+    `,
+    args: [token]
+  })
 
   return NextResponse.json({
     status: "success",

@@ -1,8 +1,13 @@
 import Database from "better-sqlite3"
+import { createClient } from "@libsql/client";
 
-export const db = new Database("sms.db")
+// export const db = new Database("sms.db")
+export const db = createClient({
+  url: process.env.SMS_TURSO_DATABASE_URL!,
+  authToken: process.env.SMS_TURSO_AUTH_TOKEN!
+})
 
-db.exec(`
+db.execute(`
 CREATE TABLE IF NOT EXISTS sms_messages (
   id TEXT PRIMARY KEY,
   phone TEXT,
@@ -16,7 +21,7 @@ CREATE TABLE IF NOT EXISTS sms_messages (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 )
 `)
-db.exec(`
+db.execute(`
 CREATE TABLE IF NOT EXISTS otp_requests (
   id TEXT PRIMARY KEY,
   token TEXT,

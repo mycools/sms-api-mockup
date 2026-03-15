@@ -24,12 +24,13 @@ export async function GET(req: NextRequest) {
 
   const phone = normalizePhone(phoneParam)
 
-  const rows = db.prepare(`
-    SELECT
-      id as message_id,
-      phone as number,
-      message,
-      sender,
+  const result = await db.execute({
+    sql: `
+      SELECT
+        id as message_id,
+        phone as number,
+        message,
+        sender,
       credit_used,
       shorten_url,
       tracking_url,
@@ -39,11 +40,13 @@ export async function GET(req: NextRequest) {
     WHERE phone = ?
     ORDER BY created_at DESC
     LIMIT 100
-  `).all(phone)
+  `,
+  args: [phone]
+})
 
   return NextResponse.json({
     phone,
-    total: rows.length,
-    data: rows
+    total: result.rows.length,
+    data: result.rows
   })
 }
